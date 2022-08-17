@@ -28,7 +28,7 @@ export default defineComponent({
       <div class="agenda-item__col">{{ agendaItem.startsAt }} - {{ agendaItem.endsAt }}</div>
       <div class="agenda-item__col">
         <h3 class="agenda-item__title"> 
-          <slot name="title"> {{ agendaItemDefaultTitle }} </slot> 
+          <span v-html="agendaItem.title || agendaItemDefaultTitle"></span> 
         </h3>
         <p v-if="agendaItem.type === 'talk'" class="agenda-item__talk">
           <span> {{ agendaItem.speaker }} </span>
