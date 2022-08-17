@@ -23,7 +23,7 @@ export default defineComponent({
   data() {
     return {
       meetup: undefined,
-      error: false,
+      errorMessage: undefined,
     };
   },
 
@@ -32,13 +32,13 @@ export default defineComponent({
       immediate: true,
       handler(newValue) {
         this.meetup = undefined;
-        this.error = false;
+        this.errorMessage = undefined;
         fetchMeetupById(newValue)
           .then((res) => {
             this.meetup = res;
           })
-          .catch(() => {
-            this.error = true;
+          .catch((error) => {
+            this.errorMessage = error.message;
           });
       },
     },
@@ -49,12 +49,12 @@ export default defineComponent({
       
       <meetup-view v-if="meetup" :meetup="meetup"></meetup-view>
 
-      <ui-container v-if="!meetup && !error">
+      <ui-container v-if="!meetup && !errorMessage">
         <ui-alert>Загрузка...</ui-alert>
       </ui-container>
 
-      <ui-container v-if="error">
-        <ui-alert> Программа пока пуста… </ui-alert>
+      <ui-container v-if="errorMessage">
+        <ui-alert> {{ errorMessage }} </ui-alert>
       </ui-container>
     </div>`,
 });
