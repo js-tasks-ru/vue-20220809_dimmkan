@@ -32,7 +32,7 @@ module.exports = {
     'no-var': 'error',
     // Vue / Priority A: Essential Essential
     'vue/no-unused-components': 'off', // For task start code
-    'vue/require-v-for-key': 'warn', // Unknown error in the beginning
+    'vue/require-v-for-key': 'off', // Unknown error in the beginning
     'vue/valid-template-root': 'off', // For task start code
     // Vue / Priority B: Strongly Recommended
     'vue/v-bind-style': 'error',
