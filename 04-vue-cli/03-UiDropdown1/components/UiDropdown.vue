@@ -6,7 +6,7 @@
       :class="{ dropdown__toggle_icon: haveIcon }"
       @click="isOpen = !isOpen"
     >
-      <ui-icon v-if="selectedItem && haveIcon && selectedItem?.icon" :icon="selectedItem.icon" class="dropdown__icon" />
+      <ui-icon v-if="selectedItem?.icon" :icon="selectedItem.icon" class="dropdown__icon" />
       <span> {{ selectedItem ? selectedItem.text : title }} </span>
     </button>
 
