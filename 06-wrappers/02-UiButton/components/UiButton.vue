@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" class="button" :class="buttonClasses" :type="buttonType">
+  <component :is="tag" class="button" :class="[buttonVariant[variant], { button_block: block }]" :type="buttonType">
     <slot />
   </component>
 </template>
@@ -7,6 +7,7 @@
 <script>
 export default {
   name: 'UiButton',
+
   props: {
     tag: {
       type: String,
@@ -21,10 +22,17 @@ export default {
       default: false,
     },
   },
+
+  data() {
+    return {
+      buttonVariant: {
+        primary: 'button_primary',
+        secondary: 'button_secondary',
+        danger: 'button_danger',
+      },
+    };
+  },
   computed: {
-    buttonClasses() {
-      return `button_${this.variant}` + `${this.block ? ' button_block' : ''}`;
-    },
     buttonType() {
       return this.tag === 'button' ? this.$attrs?.type || 'button' : this.$attrs?.type;
     },
