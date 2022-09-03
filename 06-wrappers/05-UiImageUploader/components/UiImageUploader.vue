@@ -47,7 +47,7 @@ export default {
 
   computed: {
     image() {
-      return this.preview || this.selectedImage;
+      return this.selectedImage || this.preview; // Fix - было неправильное условие, если есть превью - некорректно загружалось, превью всегда было истинно.
     },
 
     stateText() {
@@ -104,6 +104,7 @@ export default {
     },
 
     deleteFile() {
+      this.selectedImage = null; // Fix - без этой штуки при использовании в другом компоненте - не сбрасывалось изображение
       this.$refs.input.value = '';
     },
   },
