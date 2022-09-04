@@ -1,31 +1,34 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
       <ui-icon icon="trash" />
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown v-model="localAgendaItem.type" title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" />
+          <ui-input
+            v-model="localAgendaItem.startsAt"
+            type="time"
+            placeholder="00:00"
+            name="startsAt"
+            @input="handleStartsAtChange"
+          />
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" />
+          <ui-input v-model="localAgendaItem.endsAt" type="time" placeholder="00:00" name="endsAt" />
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Заголовок">
-      <ui-input name="title" />
-    </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" />
+    <ui-form-group v-for="(obj, field) in typeSchema" :key="field" :label="obj.label">
+      <component :is="obj.component" v-model="localAgendaItem[field]" v-bind="obj.props" />
     </ui-form-group>
   </fieldset>
 </template>
@@ -163,6 +166,56 @@ export default {
     agendaItem: {
       type: Object,
       required: true,
+    },
+  },
+
+  emits: ['remove', 'update:agendaItem'],
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+
+  computed: {
+    typeSchema() {
+      return agendaItemFormSchemas[this.localAgendaItem.type];
+    },
+  },
+
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler() {
+        this.$emit('update:agendaItem', { ...this.localAgendaItem });
+      },
+    },
+  },
+
+  methods: {
+    handleStartsAtChange($event) {
+      const newStartMs = $event.target.valueAsNumber;
+      const diffMs = this.diffInMs(this.localAgendaItem.startsAt, this.localAgendaItem.endsAt);
+      const newEndMs = newStartMs + diffMs;
+      this.localAgendaItem.endsAt = this.newEndToString(newEndMs);
+    },
+
+    diffInMs(startsAt, endsAt) {
+      const [startsAtMsHours, startsAtMsMinutes] = startsAt.split(':').map((item) => parseInt(item, 10));
+      const [endsAtMsHours, endsAtMsMinutes] = endsAt.split(':').map((item) => parseInt(item, 10));
+      const startsAtMs = startsAtMsHours * 3600000 + startsAtMsMinutes * 60000;
+      const endsAtMs = endsAtMsHours * 3600000 + endsAtMsMinutes * 60000;
+      return startsAtMs > endsAtMs ? 86400000 + endsAtMs - startsAtMs : endsAtMs - startsAtMs;
+    },
+
+    newEndToString(ms) {
+      let h = Math.floor(ms / 1000 / 60 / 60) % 24;
+      let m = Math.floor((ms / 1000 / 60 / 60 - h) * 60) % 60;
+
+      m < 10 ? (m = `0${m}`) : (m = `${m}`);
+      h < 10 ? (h = `0${h}`) : (h = `${h}`);
+
+      return `${h}:${m}`;
     },
   },
 };
