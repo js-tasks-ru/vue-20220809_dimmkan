@@ -31,6 +31,18 @@ export default {
     };
   },
 
+  watch: {
+    messages: {
+      deep: true,
+      handler() {
+        this.$nextTick(() => {
+          const currentElement = this.$refs.items[this.$refs.items.length - 1];
+          currentElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        });
+      },
+    },
+  },
+
   methods: {
     handleSendSubmit() {
       this.send();
